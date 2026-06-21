@@ -1,6 +1,6 @@
-# ==========================
+
 # IMPORT LIBRARIES
-# ==========================
+
 import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
@@ -14,16 +14,16 @@ from sklearn.preprocessing import OneHotEncoder
 from sklearn.compose import ColumnTransformer
 from sklearn.pipeline import Pipeline
 
-# ==========================
+
 # LOAD DATA
-# ==========================
+
 car_data = pd.read_csv("car data.csv")
 
 print("Dataset Shape:", car_data.shape)
 
-# ==========================
+
 # DATA PREPROCESSING
-# ==========================
+
 
 # Remove car name since it doesn't add much predictive power
 car_data.drop("Car_Name", axis=1, inplace=True)
@@ -39,9 +39,9 @@ car_data.drop("Year", axis=1, inplace=True)
 print("\nMissing Values:")
 print(car_data.isnull().sum())
 
-# ==========================
+
 # FEATURES AND TARGET
-# ==========================
+
 X = car_data.drop("Selling_Price", axis=1)
 y = car_data["Selling_Price"]
 
@@ -60,9 +60,9 @@ preprocessor = ColumnTransformer(
     remainder="passthrough"
 )
 
-# ==========================
+
 # TRAIN TEST SPLIT
-# ==========================
+
 X_train, X_test, y_train, y_test = train_test_split(
     X,
     y,
@@ -70,9 +70,9 @@ X_train, X_test, y_train, y_test = train_test_split(
     random_state=42
 )
 
-# ==========================
+
 # LINEAR REGRESSION
-# ==========================
+
 linear_pipeline = Pipeline([
     ("preprocessor", preprocessor),
     ("model", LinearRegression())
@@ -88,9 +88,9 @@ lr_test_r2 = r2_score(y_test, test_pred_lr)
 
 lr_mse = mean_squared_error(y_test, test_pred_lr)
 
-# ==========================
+
 # LASSO REGRESSION
-# ==========================
+
 lasso_pipeline = Pipeline([
     ("preprocessor", preprocessor),
     ("model", Lasso())
@@ -119,9 +119,9 @@ lasso_test_r2 = r2_score(y_test, test_pred_lasso)
 
 lasso_mse = mean_squared_error(y_test, test_pred_lasso)
 
-# ==========================
+
 # MODEL COMPARISON
-# ==========================
+
 results = pd.DataFrame({
     "Model": ["Linear Regression", "Lasso Regression"],
     "Train R2": [lr_train_r2, lasso_train_r2],
@@ -132,9 +132,9 @@ results = pd.DataFrame({
 print("\nModel Comparison")
 print(results)
 
-# ==========================
+
 # OVERFITTING CHECK
-# ==========================
+
 for model, train_r2, test_r2 in zip(
         results["Model"],
         results["Train R2"],
@@ -149,9 +149,8 @@ for model, train_r2, test_r2 in zip(
     else:
         print("No Significant Overfitting")
 
-# ==========================
 # FEATURE IMPORTANCE
-# ==========================
+
 feature_names = (
     linear_pipeline.named_steps["preprocessor"]
     .get_feature_names_out()
@@ -179,9 +178,9 @@ importance_df = importance_df.sort_values(
 print("\nTop Features")
 print(importance_df.head(10))
 
-# ==========================
+
 # VISUALIZATION
-# ==========================
+
 
 plt.figure(figsize=(8,6))
 plt.scatter(y_test, test_pred_lr)
@@ -197,9 +196,9 @@ plt.ylabel("Predicted Price")
 plt.title("Lasso Regression Predictions")
 plt.show()
 
-# ==========================
+
 # SAVE BEST MODEL
-# ==========================
+
 if lr_test_r2 >= lasso_test_r2:
     best_model = linear_pipeline
     model_name = "Linear Regression"
